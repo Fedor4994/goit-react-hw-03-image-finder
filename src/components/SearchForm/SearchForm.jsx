@@ -1,43 +1,38 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import s from './SearchForm.module.css';
 import { BiSearchAlt } from 'react-icons/bi';
 
-export default class SearchForm extends Component {
-  state = {
-    query: '',
+const SearchForm = ({ onSubmit }) => {
+  const [query, setQuery] = useState('');
+
+  const onChange = event => {
+    setQuery(event.target.value);
   };
 
-  onChange = event => {
-    this.setState({
-      query: event.target.value,
-    });
-  };
-
-  onSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    this.props.onSubmit(this.state.query);
-    this.setState({ query: '' });
+    onSubmit(query);
+    setQuery('');
   };
 
-  render() {
-    const { query } = this.state;
-    return (
-      <div className={s.formWrapper}>
-        <form onSubmit={this.onSubmit} className={s.searchForm}>
-          <button className={s.searchButton} type="submit">
-            <BiSearchAlt size="22" />
-          </button>
-          <input
-            onChange={this.onChange}
-            type="text"
-            name="searchQuery"
-            value={query}
-            autoComplete="off"
-            placeholder="Search images..."
-            className={s.searchInput}
-          />
-        </form>
-      </div>
-    );
-  }
-}
+  return (
+    <div className={s.formWrapper}>
+      <form onSubmit={handleSubmit} className={s.searchForm}>
+        <button className={s.searchButton} type="submit">
+          <BiSearchAlt size="22" />
+        </button>
+        <input
+          onChange={onChange}
+          type="text"
+          name="searchQuery"
+          value={query}
+          autoComplete="off"
+          placeholder="Search images..."
+          className={s.searchInput}
+        />
+      </form>
+    </div>
+  );
+};
+
+export default SearchForm;

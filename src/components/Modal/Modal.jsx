@@ -1,35 +1,32 @@
-import React, { Component } from 'react';
+import { useEffect } from 'react';
 import s from './Modal.module.css';
 
-export default class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.onEscClose);
-  }
+const Modal = ({ toggleModal, bigImg }) => {
+  useEffect(() => {
+    const onEscClose = event => {
+      if (event.code === 'Escape') {
+        toggleModal();
+      }
+    };
+    window.addEventListener('keydown', onEscClose);
+    return () => {
+      window.removeEventListener('keydown', onEscClose);
+    };
+  }, [toggleModal]);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onEscClose);
-  }
-
-  closeModal = event => {
+  const closeModal = event => {
     if (event.target === event.currentTarget) {
-      this.props.toggleModal();
+      toggleModal();
     }
   };
 
-  onEscClose = event => {
-    if (event.code === 'Escape') {
-      this.props.toggleModal();
-    }
-  };
-
-  render() {
-    const { bigImg } = this.props;
-    return (
-      <div onClick={this.closeModal} className={s.backdrop}>
-        <div className={s.modal}>
-          <img src={bigImg} alt="big" />
-        </div>
+  return (
+    <div onClick={closeModal} className={s.backdrop}>
+      <div className={s.modal}>
+        <img src={bigImg} alt="big" />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+export default Modal;

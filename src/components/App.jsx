@@ -1,85 +1,20 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import Gallery from './Gallery/Gallery';
 import SearchForm from './SearchForm/SearchForm';
 import { fetchData } from 'fetchData';
 import ScrollButton from './ScrollButton/ScrollButton';
+import { useEffect } from 'react';
 
-export class App extends Component {
-  state = {
-    gallery: [],
-    lastPage: false,
-    isLoading: false,
-  };
+export const App = () => {
+  const [gallery, setGallery] = useState([]);
+  const [isLastPage, setIsLastPage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
 
-  searchQuery = '';
-  page = 1;
-  key = '30714189-c7a9caa64088584cf8591e191';
+  const KEY = '30714189-c7a9caa64088584cf8591e191';
 
-  onSubmit = query => {
-    this.searchQuery = query;
-    if (this.searchQuery.trim() !== '') {
-      this.page = 1;
-      this.setState({
-        isLoading: true,
-        gallery: [],
-      });
-      fetchData(this.key, this.searchQuery, this.page)
-        .then(gallery => {
-          if (this.page > gallery.totalHits / 12) {
-            this.setState({
-              lastPage: true,
-            });
-          } else {
-            this.setState({
-              lastPage: false,
-            });
-          }
-          if (gallery.hits.length === 0) {
-            this.setState({
-              gallery: ['noimg'],
-            });
-          } else {
-            this.setState({
-              gallery: gallery.hits,
-            });
-          }
-        })
-        .finally(() => {
-          this.setState({
-            isLoading: false,
-          });
-        });
-    }
-  };
-
-  loadMore = () => {
-    this.page += 1;
-    this.setState({
-      isLoading: true,
-    });
-    fetchData(this.key, this.searchQuery, this.page)
-      .then(gallery => {
-        if (this.page > gallery.totalHits / 12) {
-          this.setState({
-            lastPage: true,
-          });
-        }
-
-        this.setState(prevState => ({
-          gallery: [...prevState.gallery, ...gallery.hits],
-        }));
-      })
-      .finally(() => {
-        this.setState({
-          isLoading: false,
-        });
-        setTimeout(() => {
-          this.addAutoScroll();
-        }, 200);
-      });
-  };
-
-  addAutoScroll = () => {
+  const addAutoScroll = () => {
     const cardHeight = 500;
 
     window.scrollBy({
@@ -88,28 +23,64 @@ export class App extends Component {
     });
   };
 
-  render() {
-    const { lastPage, isLoading, gallery } = this.state;
-    return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridGap: 16,
-          paddingBottom: 24,
-        }}
-      >
-        <SearchForm onSubmit={this.onSubmit} />
+  useEffect(() => {
+    if (searchQuery.trim() !== '') {
+      setIsLoading(true);
 
-        <Gallery
-          isLastPage={lastPage}
-          isLoading={isLoading}
-          loadMore={this.loadMore}
-          posts={gallery}
-        />
+      fetchData(KEY, searchQuery, page)
+        .then(gallery => {
+          page > gallery.totalHits / 12
+            ? setIsLastPage(true)
+            : setIsLastPage(false);
 
-        <ScrollButton />
-      </div>
-    );
-  }
-}
+          gallery.hits.length === 0
+            ? setGallery(['noimg'])
+            : setGallery(prevGallery => [...prevGallery, ...gallery.hits]);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          if (page > 1) {
+            setTimeout(() => {
+              addAutoScroll();
+            }, 200);
+          }
+        });
+    }
+  }, [searchQuery, page]);
+
+  const onSubmit = query => {
+    if (query.trim() !== '' && query !== searchQuery) {
+      setSearchQuery(query);
+      setGallery([]);
+      setPage(1);
+    }
+  };
+
+  const loadMore = () => {
+    setPage(prevPage => {
+      return prevPage + 1;
+    });
+  };
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr',
+        gridGap: 16,
+        paddingBottom: 24,
+      }}
+    >
+      <SearchForm onSubmit={onSubmit} />
+
+      <Gallery
+        isLastPage={isLastPage}
+        isLoading={isLoading}
+        loadMore={loadMore}
+        posts={gallery}
+      />
+
+      <ScrollButton />
+    </div>
+  );
+};
