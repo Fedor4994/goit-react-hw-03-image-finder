@@ -1,6 +1,7 @@
 import Modal from 'components/Modal/Modal';
 import { useState } from 'react';
 import s from './GalleryItem.module.css';
+import PropTypes from 'prop-types';
 
 const GalleryItem = ({ smallImage, bigImage }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +27,11 @@ const GalleryItem = ({ smallImage, bigImage }) => {
       </div>
     </>
   );
+};
+
+GalleryItem.propTypes = {
+  smallImage: PropTypes.string,
+  bigImage: PropTypes.string,
 };
 
 export default GalleryItem;

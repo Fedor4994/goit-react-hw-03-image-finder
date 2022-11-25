@@ -2,6 +2,7 @@ import GalleryItem from 'components/GalleryItem/GalleryItem';
 import LoadMoreButton from 'components/LoadMoreButton/LoadMoreButton';
 import s from './Gallery.module.css';
 import { ThreeDots } from 'react-loader-spinner';
+import PropTypes from 'prop-types';
 
 const Gallery = ({ isLastPage, isLoading, loadMore, posts }) => {
   return (
@@ -42,6 +43,13 @@ const Gallery = ({ isLastPage, isLoading, loadMore, posts }) => {
       )}
     </>
   );
+};
+
+Gallery.propTypes = {
+  isLastPage: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  loadMore: PropTypes.func,
+  posts: PropTypes.array,
 };
 
 export default Gallery;

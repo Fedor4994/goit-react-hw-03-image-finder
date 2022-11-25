@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import s from './SearchForm.module.css';
 import { BiSearchAlt } from 'react-icons/bi';
+import PropTypes from 'prop-types';
 
 const SearchForm = ({ onSubmit }) => {
   const [query, setQuery] = useState('');
@@ -33,6 +34,10 @@ const SearchForm = ({ onSubmit }) => {
       </form>
     </div>
   );
+};
+
+SearchForm.propTypes = {
+  onSubmit: PropTypes.func,
 };
 
 export default SearchForm;

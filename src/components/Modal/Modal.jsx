@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import s from './Modal.module.css';
+import PropTypes from 'prop-types';
 
 const Modal = ({ toggleModal, bigImg }) => {
   useEffect(() => {
@@ -27,6 +28,11 @@ const Modal = ({ toggleModal, bigImg }) => {
       </div>
     </div>
   );
+};
+
+Modal.propTypes = {
+  toggleModal: PropTypes.func,
+  bigImg: PropTypes.string,
 };
 
 export default Modal;
